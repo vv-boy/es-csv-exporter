@@ -9,6 +9,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
+  "devtools_page": "src/bg/devtools.html",
   "default_locale": "en",
   "background": {
     "page": "src/bg/background.html",
@@ -24,7 +25,9 @@
     "downloads",
     "tabs",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "webRequestBlocking",
+    "webRequest"
   ],
   "content_scripts": [
     {

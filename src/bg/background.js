@@ -9,10 +9,13 @@
  * Credits: This extension is created using Extensionizr , github.com/uzairfarooq/arrive
  */
 
+let data = [];
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
+
       //console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
       if (request.msg == "store-csv"){
+        sendResponse(data);
         var csvContents = request.data;
         var input = document.createElement('textarea');
         document.body.appendChild(input);
@@ -28,7 +31,10 @@ chrome.runtime.onMessage.addListener(
         sendResponse({status: "success"});
       }else if(request.msg == "badge"){
         badgeOnOff(request.data);
-      }else{
+      } else if (request.msg == "request") {
+
+      } else {
+        console.log(request);
         sendResponse({status: "Unknown Message"});
       }
     }
@@ -56,3 +62,5 @@ chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo){
     }
   });
 });
+
+
