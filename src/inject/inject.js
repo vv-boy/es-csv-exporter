@@ -172,7 +172,7 @@ function createCSVButton() {
                             if (i === 0) {
                                 needFields.push('@timestamp');
                                 fields.forEach((e) => needFields.push(e));
-                                data.push(fields);
+                                data.push(needFields);
                             }
                             let tmp = [];
                             needFields.forEach(field => {
