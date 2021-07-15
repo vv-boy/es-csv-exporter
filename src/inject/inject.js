@@ -150,9 +150,10 @@ function createCSVButton() {
                     raw = JSON.stringify(raw);
                     var url = new URL(window.location.href);
                     var host = `${url.protocol}://${url.host}`;
-                    fetch(host + '/_plugin/kibana/internal/search/es', {
+                    fetch('/_plugin/kibana/internal/search/es', {
                         method: 'POST',
                         headers: {
+                            'Host': host,
                             'Accept': 'application/json',
                             'Content-Type': 'application/json',
                             'Origin': host,
