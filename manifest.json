@@ -9,11 +9,10 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "devtools_page": "src/devtools.html",
   "default_locale": "en",
   "background": {
     "page": "src/bg/background.html",
-        "persistent": false
+        "persistent": true
   },
   "browser_action": {
     "default_icon": "icons/icon19.png",
@@ -25,7 +24,8 @@
     "downloads",
     "tabs",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "webRequest","webRequestBlocking"
   ],
   "content_scripts": [
     {

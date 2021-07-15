@@ -11,10 +11,20 @@
 
 let csvData = [];
 let lastUrl = '';
-// chrome.webRequest.onBeforeRequest.addListener(function(data){
-//     // data contains request_body
-//     console.log(data);
-// },{'urls':[]},['requestBody']);
+let raw = '';
+if (chrome.webRequest) 
+{
+  chrome.webRequest.onBeforeRequest.addListener(function(data){
+    if (data.url.includes('kibana/internal/search/es')) {
+      raw = data.requestBody.raw
+      raw = new TextDecoder().decode(raw[0].bytes);
+      console.log(raw);
+    }
+  },{'urls':[]},['requestBody']);
+
+
+}
+
 
 
 
@@ -42,26 +52,33 @@ chrome.runtime.onMessage.addListener(
       } else if (request.msg == "search") {
         csvData = request;
       } else if(request.msg==='test') {
-        let info = csvData.bodyObj.rawResponse.hits.hits;
-        let fields = [];
-        let data = [];
-        for (let i = 0; i < info.length; i++) {
-            let item = info[i];
-            let fields = [];
-            if (i === 0) {
-              fields.push('@timestamp');
-              request.fields.forEach((e) => fields.push(e));
-              data.push(fields);  
-            }
-            
-            let tmp = [];
-            fields.forEach(field => {
-              tmp.push(array_get(item._source, field));  
-            });
-            data.push(tmp);
-
+        if (raw) {
+          sendResponse({raw, status: "success"})  
+        } else {
+          sendResponse({status: "empty"});
         }
-          sendResponse(data)
+        
+        
+        // let info = csvData.bodyObj.rawResponse.hits.hits;
+        // let fields = [];
+        // let data = [];
+        // for (let i = 0; i < info.length; i++) {
+        //     let item = info[i];
+        //     let fields = [];
+        //     if (i === 0) {
+        //       fields.push('@timestamp');
+        //       request.fields.forEach((e) => fields.push(e));
+        //       data.push(fields);  
+        //     }
+            
+        //     let tmp = [];
+        //     fields.forEach(field => {
+        //       tmp.push(array_get(item._source, field));  
+        //     });
+        //     data.push(tmp);
+
+        // }
+        //   sendResponse(data)
       }else {
         console.log(request);
         sendResponse({status: "Unknown Message"});
@@ -72,7 +89,7 @@ chrome.runtime.onMessage.addListener(
 function array_get(info, keys) {
   keys = keys.split('.')
   keys.forEach(key => {
-    info = info[key]; 
+    info = info && info[key]; 
   });
   return info;
 }
