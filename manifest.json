@@ -9,11 +9,11 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "devtools_page": "src/bg/devtools.html",
+  "devtools_page": "src/devtools.html",
   "default_locale": "en",
   "background": {
     "page": "src/bg/background.html",
-    "persistent": true
+        "persistent": false
   },
   "browser_action": {
     "default_icon": "icons/icon19.png",
@@ -25,9 +25,7 @@
     "downloads",
     "tabs",
     "http://*/*",
-    "https://*/*",
-    "webRequestBlocking",
-    "webRequest"
+    "https://*/*"
   ],
   "content_scripts": [
     {
@@ -47,7 +45,8 @@
       "js": [
         "src/inject/inject.js",
         "src/inject/lib/arrive.js"
-      ]
+      ],
+      "run_at": "document_start"
     }
   ]
 }

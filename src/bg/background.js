@@ -9,7 +9,15 @@
  * Credits: This extension is created using Extensionizr , github.com/uzairfarooq/arrive
  */
 
-let data = [];
+let csvData = [];
+let lastUrl = '';
+// chrome.webRequest.onBeforeRequest.addListener(function(data){
+//     // data contains request_body
+//     console.log(data);
+// },{'urls':[]},['requestBody']);
+
+
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
 
@@ -31,14 +39,43 @@ chrome.runtime.onMessage.addListener(
         sendResponse({status: "success"});
       }else if(request.msg == "badge"){
         badgeOnOff(request.data);
-      } else if (request.msg == "request") {
+      } else if (request.msg == "search") {
+        csvData = request;
+      } else if(request.msg==='test') {
+        let info = csvData.bodyObj.rawResponse.hits.hits;
+        let fields = [];
+        let data = [];
+        for (let i = 0; i < info.length; i++) {
+            let item = info[i];
+            let fields = [];
+            if (i === 0) {
+              fields.push('@timestamp');
+              request.fields.forEach((e) => fields.push(e));
+              data.push(fields);  
+            }
+            
+            let tmp = [];
+            fields.forEach(field => {
+              tmp.push(array_get(item._source, field));  
+            });
+            data.push(tmp);
 
-      } else {
+        }
+          sendResponse(data)
+      }else {
         console.log(request);
         sendResponse({status: "Unknown Message"});
       }
     }
 );
+
+function array_get(info, keys) {
+  keys = keys.split('.')
+  keys.forEach(key => {
+    info = info[key]; 
+  });
+  return info;
+}
 
 function badgeOnOff(on) {
   if (on) {

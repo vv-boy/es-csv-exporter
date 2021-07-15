@@ -112,71 +112,28 @@ function createCSVButton(){
 
   var csvButton = createElement('div', csvElemAttributes, csvInnerHTML);
   csvButton.onclick = function(){
-    console.log("data", data);
+    var table = document.getElementsByClassName("kbn-table")[0];
+    if (table) {
+      let th = table.getElementsByTagName("th");
+      let fields = [];
+      for (let i = 0; i < th.length; i++) {
+        fields.push(th[i].textContent);
+      }
+      console.log(fields);
+
+      delete fields[0];
+      delete fields[1];
+      fields = fields.filter((e) => e);
+
+      chrome.runtime.sendMessage({"msg": "test", fields}, function(data) {
+            exportData(data);
+            console.log(data);
+          })  
+    }
+
+    
   };
   return csvButton;
-}
-
-
-function createMessageSlider(){
-  var wrapperDiv = createElement('div', {"style": "padding:10px 5px; background-color:#656a76; width:100% !important;", "id":"csv-message-wrapper"});
-  var messageBox = createElement('div', {"style": "float:right; margin-top:10px; line-height:2.5em;", "id":"csv-message-box"});
-  wrapperDiv.appendChild(messageBox);
-
-  var successText = "CSV Exporter: This will export only the visible query results.";
-  var failureText = "Oops, CSV export failed.";
-  messageBox.appendChild(createElement('span',null,successText));
-
-
-  var copyToClipboardHTML = '<button title="Copy to clipboard" aria-expanded="true"  aria-label="Copy to clipboard" style="border: 1px solid #fff;margin-left: 10px;"><p style="margin: 0;font-size: 12px;font-weight:100;">Copy to clipboard</p></button>';
-  var copyToClipboard = createElement('span', {"title":"Copy to clipboard"}, copyToClipboardHTML);
-  copyToClipboard.onclick = function(){
-    parseAndCopyToClipBoard();
-  };
-  messageBox.appendChild(copyToClipboard);
-
-
-  var copyToDriveHTML = '<button aria-expanded="true" aria-label="Copy to Google Drive" style="border:1px solid #fff;margin-left: 10px;"><p style="margin: 0;font-size: 12px;font-weight:100;">Google Drive</p></button>';
-  var copyToDrive = createElement('span', {"title":"Copy to Google Drive"}, copyToDriveHTML);
-  copyToDrive.onclick = function(){
-    alert("Coming soon");
-  };
-  messageBox.appendChild(copyToDrive);
-
-  var CloseHTML = '<button aria-expanded="true" aria-label="Close export slider"><p style="margin: 0;font-size: 12px;font-weight:100;">X</p></button>';
-  var close = createElement('span', {"title":"Close export slider"}, CloseHTML);
-  close.onclick = function(){
-   closeMessageSlider();
-  };
-  messageBox.appendChild(close);
-
-  return wrapperDiv;
-}
-
-
-function closeMessageSlider(){
-  var nav = getMessageSliderElement();
-  var wrapperDiv = document.getElementById("csv-message-wrapper");
-
-  if(nav && wrapperDiv)
-    nav.removeChild(wrapperDiv);
-}
-
-function injectMessageSlider(){
-  closeMessageSlider();
-  var div = createMessageSlider();
-  var nav = getMessageSliderElement();
-  if(nav) {
-    nav.appendChild(div);
-  }
-}
-
-function getMessageSliderElement(){
-  var nav = document.getElementsByTagName("navbar")[0];
-  if(!nav) {
-    nav = document.getElementsByClassName("localNav")[0];
-  }
-  return nav;
 }
 
 
@@ -195,6 +152,13 @@ function injectCSVExportButton() {
     var span = createCSVButton();
     navbar.appendChild(span);
   }
+}
+
+function exportData(rows) {
+    let csvContent = "data:text/csv;charset=utf-8," 
+    + rows.map(e => e.join(",")).join("\n");
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
 }
 
 
