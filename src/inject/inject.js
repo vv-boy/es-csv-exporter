@@ -210,9 +210,10 @@ function injectCSVExportButton() {
 }
 
 function exportData(rows) {
-    let csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-    var encodedUri = encodeURI(csvContent);
-    window.open(encodedUri);
+    let csvContent = rows.map(e => e.join(",")).join("\n");
+    let csvData = new Blob([csvContent], { type: 'text/csv' }); 
+    var csvUrl = URL.createObjectURL(csvData);
+    window.open(csvUrl);
 }
 // chrome.devtools.network.getHAR(function(result) {
 //   var entries = result.entries;
